@@ -1,0 +1,54 @@
+--12. Tìm các số hóa đơn đã mua sản phẩm có mã số “BB01” hoặc “BB02”, mỗi sản phẩm mua với số lượng từ 10 đến 20. 
+SELECT DISTINCT SoHD  
+FROM CTHD  WHERE   MaSP IN ('BB01', 'BB02') AND SL BETWEEN 10 AND 20
+
+--13. Tìm các số hóa đơn mua cùng lúc 2 sản phẩm có mã số “BB01” và “BB02”, mỗi sản phẩm mua với số lượng từ 10 đến 20. 
+SELECT DISTINCT SoHD  
+FROM CTHD  
+WHERE MaSP = 'BB01' AND SL BETWEEN 10 AND 20  INTERSECT  (
+		  
+SELECT DISTINCT SoHD  
+FROM CTHD  
+WHERE MaSP = 'BB02' AND SL BETWEEN 10 AND 20 
+	)
+
+--14. In ra danh sách các sản phẩm (MASP,TENSP) do “Trung Quoc” sản xuất hoặc các sản phẩm được bán ra trong ngày 1/1/2007. 
+SELECT DISTINCT SanPham.MaSP, TenSP  
+FROM HoaDon, SanPham, CTHD  
+WHERE  HoaDon.SoHD = CTHD.SoHD  AND CTHD.MaSP = SanPham.MaSP  AND (
+		NuocSX = 'Trung Quoc'   
+		OR NgHD = '1/1/2007'
+	)
+
+--15. In ra danh sách các sản phẩm (MASP,TENSP) không bán được. 
+SELECT MaSP, TenSP  
+FROM SanPham  
+WHERE MaSP NOT IN (
+SELECT MaSP 
+FROM CTHD
+)
+
+--16. In ra danh sách các sản phẩm (MASP,TENSP) không bán được trong năm 2006. 
+SELECT MaSP, TenSP  
+FROM SanPham  
+WHERE MaSP NOT IN (
+SELECT MaSP   
+FROM CTHD, HoaDon  
+WHERE CTHD.SoHD = HoaDon.SoHD  AND YEAR(NgHD) = 2006  )
+
+--17. In ra danh sách các sản phẩm (MASP,TENSP) do “Trung Quoc” sản xuất không bán được trong năm 2006. 
+SELECT MaSP, TenSP  
+FROM SanPham 
+WHERE  NuocSX = 'Trung Quoc' AND MaSP NOT IN  (
+SELECT MaSP   
+FROM CTHD, HoaDon 
+WHERE CTHD.SoHD = HoaDon.SoHD  
+ AND YEAR (NgHD) = 2006 
+ )
+
+--18. Tìm số hóa đơn trong năm 2006 đã mua ít nhất tất cả các sản phẩm do Singapore sản xuất.
+SELECT SoHD  
+FROM HoaDon  
+WHERE NOT EXISTS (SELECT* FROM SanPham  
+					WHERE NuocSX = 'Singapore' AND NOT EXISTS (SELECT* FROM CTHD WHERE CTHD.SoHD = HoaDon.SoHD AND CTHD.MaSP = SanPham.MaSP )  
+ )
