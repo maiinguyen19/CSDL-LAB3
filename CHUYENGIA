@@ -1,0 +1,161 @@
+-- 8. Hiển thị tên và cấp độ của tất cả các kỹ năng của chuyên gia có MaChuyenGia là 1.
+SELECT TenKyNang, CapDo
+FROM KyNang
+WHERE MaChuyenGia = 1;
+
+
+-- 9. Liệt kê tên các chuyên gia tham gia dự án có MaDuAn là 2.
+SELECT DISTINCT ChuyenGia.HoTen
+FROM ChuyenGia
+JOIN ThamGiaDuAn ON ChuyenGia.MaChuyenGia = ThamGiaDuAn.MaChuyenGia
+WHERE ThamGiaDuAn.MaDuAn = 2;
+
+
+-- 10. Hiển thị tên công ty và tên dự án của tất cả các dự án.
+SELECT CongTy.TenCongTy, DuAn.TenDuAn
+FROM CongTy
+JOIN DuAn ON CongTy.MaCongTy = DuAn.MaCongTy;
+
+
+-- 11. Đếm số lượng chuyên gia trong mỗi chuyên ngành.
+SELECT ChuyenNganh, COUNT(*) AS SoLuongChuyenGia
+FROM ChuyenGia
+GROUP BY ChuyenNganh;
+
+
+-- 12. Tìm chuyên gia có số năm kinh nghiệm cao nhất.
+SELECT HoTen, SoNamKinhNghiem
+FROM ChuyenGia
+ORDER BY SoNamKinhNghiem DESC
+LIMIT 1;
+
+-- 13. Liệt kê tên các chuyên gia và số lượng dự án họ tham gia.
+SELECT ChuyenGia.HoTen, COUNT(ThamGiaDuAn.MaDuAn) AS SoLuongDuAn
+FROM ChuyenGia
+LEFT JOIN ThamGiaDuAn ON ChuyenGia.MaChuyenGia = ThamGiaDuAn.MaChuyenGia
+GROUP BY ChuyenGia.HoTen;
+
+
+-- 14. Hiển thị tên công ty và số lượng dự án của mỗi công ty.
+SELECT CongTy.TenCongTy, COUNT(DuAn.MaDuAn) AS SoLuongDuAn
+FROM CongTy
+LEFT JOIN DuAn ON CongTy.MaCongTy = DuAn.MaCongTy
+GROUP BY CongTy.TenCongTy;
+
+
+-- 15. Tìm kỹ năng được sở hữu bởi nhiều chuyên gia nhất.
+SELECT TenKyNang, COUNT(DISTINCT MaChuyenGia) AS SoLuongChuyenGia
+FROM KyNang
+GROUP BY TenKyNang
+ORDER BY SoLuongChuyenGia DESC
+LIMIT 1;
+
+
+-- 16. Liệt kê tên các chuyên gia có kỹ năng 'Python' với cấp độ từ 4 trở lên.
+SELECT DISTINCT ChuyenGia.HoTen
+FROM ChuyenGia
+JOIN KyNang ON ChuyenGia.MaChuyenGia = KyNang.MaChuyenGia
+WHERE KyNang.TenKyNang = 'Python' AND KyNang.CapDo >= 4;
+
+
+-- 17. Tìm dự án có nhiều chuyên gia tham gia nhất.
+SELECT DuAn.TenDuAn, COUNT(ThamGiaDuAn.MaChuyenGia) AS SoLuongChuyenGia
+FROM DuAn
+JOIN ThamGiaDuAn ON DuAn.MaDuAn = ThamGiaDuAn.MaDuAn
+GROUP BY DuAn.TenDuAn
+ORDER BY SoLuongChuyenGia DESC
+LIMIT 1;
+
+
+-- 18. Hiển thị tên và số lượng kỹ năng của mỗi chuyên gia.
+SELECT ChuyenGia.HoTen, COUNT(KyNang.MaKyNang) AS SoLuongKyNang
+FROM ChuyenGia
+LEFT JOIN KyNang ON ChuyenGia.MaChuyenGia = KyNang.MaChuyenGia
+GROUP BY ChuyenGia.HoTen;
+
+-- 19. Tìm các cặp chuyên gia làm việc cùng dự án.
+SELECT DISTINCT cg1.HoTen AS ChuyenGia1, cg2.HoTen AS ChuyenGia2, ThamGiaDuAn.MaDuAn
+FROM ThamGiaDuAn AS t1
+JOIN ThamGiaDuAn AS t2 ON t1.MaDuAn = t2.MaDuAn AND t1.MaChuyenGia < t2.MaChuyenGia
+JOIN ChuyenGia AS cg1 ON t1.MaChuyenGia = cg1.MaChuyenGia
+JOIN ChuyenGia AS cg2 ON t2.MaChuyenGia = cg2.MaChuyenGia;
+
+
+-- 20. Liệt kê tên các chuyên gia và số lượng kỹ năng cấp độ 5 của họ.
+SELECT ChuyenGia.HoTen, COUNT(KyNang.MaKyNang) AS SoLuongKyNangCap5
+FROM ChuyenGia
+JOIN KyNang ON ChuyenGia.MaChuyenGia = KyNang.MaChuyenGia
+WHERE KyNang.CapDo = 5
+GROUP BY ChuyenGia.HoTen;
+
+-- 21. Tìm các công ty không có dự án nào.
+SELECT TenCongTy
+FROM CongTy
+LEFT JOIN DuAn ON CongTy.MaCongTy = DuAn.MaCongTy
+WHERE DuAn.MaDuAn IS NULL;
+
+
+-- 22. Hiển thị tên chuyên gia và tên dự án họ tham gia, bao gồm cả chuyên gia không tham gia dự án nào.
+SELECT ChuyenGia.HoTen, DuAn.TenDuAn
+FROM ChuyenGia
+LEFT JOIN ThamGiaDuAn ON ChuyenGia.MaChuyenGia = ThamGiaDuAn.MaChuyenGia
+LEFT JOIN DuAn ON ThamGiaDuAn.MaDuAn = DuAn.MaDuAn;
+
+
+-- 23. Tìm các chuyên gia có ít nhất 3 kỹ năng.
+SELECT ChuyenGia.HoTen, COUNT(KyNang.MaKyNang) AS SoLuongKyNang
+FROM ChuyenGia
+JOIN KyNang ON ChuyenGia.MaChuyenGia = KyNang.MaChuyenGia
+GROUP BY ChuyenGia.HoTen
+HAVING COUNT(KyNang.MaKyNang) >= 3;
+
+-- 24. Hiển thị tên công ty và tổng số năm kinh nghiệm của tất cả chuyên gia trong các dự án của công ty đó.
+SELECT CongTy.TenCongTy, SUM(ChuyenGia.SoNamKinhNghiem) AS TongSoNamKinhNghiem
+FROM CongTy
+JOIN DuAn ON CongTy.MaCongTy = DuAn.MaCongTy
+JOIN ThamGiaDuAn ON DuAn.MaDuAn = ThamGiaDuAn.MaDuAn
+JOIN ChuyenGia ON ThamGiaDuAn.MaChuyenGia = ChuyenGia.MaChuyenGia
+GROUP BY CongTy.TenCongTy;
+
+
+-- 25. Tìm các chuyên gia có kỹ năng 'Java' nhưng không có kỹ năng 'Python'.
+SELECT DISTINCT ChuyenGia.HoTen
+FROM ChuyenGia
+JOIN KyNang ON ChuyenGia.MaChuyenGia = KyNang.MaChuyenGia
+WHERE KyNang.TenKyNang = 'Java'
+  AND ChuyenGia.MaChuyenGia NOT IN (
+      SELECT MaChuyenGia
+      FROM KyNang
+      WHERE TenKyNang = 'Python'
+  );
+
+-- 76. Tìm chuyên gia có số lượng kỹ năng nhiều nhất.
+SELECT ChuyenGia.HoTen, COUNT(KyNang.MaKyNang) AS SoLuongKyNang
+FROM ChuyenGia
+JOIN KyNang ON ChuyenGia.MaChuyenGia = KyNang.MaChuyenGia
+GROUP BY ChuyenGia.HoTen
+ORDER BY SoLuongKyNang DESC
+LIMIT 1;
+
+
+-- 77. Liệt kê các cặp chuyên gia có cùng chuyên ngành.
+SELECT cg1.HoTen AS ChuyenGia1, cg2.HoTen AS ChuyenGia2, cg1.ChuyenNganh
+FROM ChuyenGia AS cg1
+JOIN ChuyenGia AS cg2 ON cg1.ChuyenNganh = cg2.ChuyenNganh AND cg1.MaChuyenGia < cg2.MaChuyenGia;
+
+-- 78. Tìm công ty có tổng số năm kinh nghiệm của các chuyên gia trong dự án cao nhất.
+SELECT CongTy.TenCongTy, SUM(ChuyenGia.SoNamKinhNghiem) AS TongSoNamKinhNghiem
+FROM CongTy
+JOIN DuAn ON CongTy.MaCongTy = DuAn.MaCongTy
+JOIN ThamGiaDuAn ON DuAn.MaDuAn = ThamGiaDuAn.MaDuAn
+JOIN ChuyenGia ON ThamGiaDuAn.MaChuyenGia = ChuyenGia.MaChuyenGia
+GROUP BY CongTy.TenCongTy
+ORDER BY TongSoNamKinhNghiem DESC
+LIMIT 1;
+
+
+-- 79. Tìm kỹ năng được sở hữu bởi tất cả các chuyên gia.
+SELECT TenKyNang
+FROM KyNang
+GROUP BY TenKyNang
+HAVING COUNT(DISTINCT MaChuyenGia) = (SELECT COUNT(*) FROM ChuyenGia);
